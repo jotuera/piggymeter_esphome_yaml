@@ -3,24 +3,12 @@
 #
 # The MT174 is common in Poland (ENEA / Tauron / Energa) and speaks IEC 62056-21
 # mode C: it answers /?! (identifies as /ISk5MT174-...) and negotiates up to 9600 baud.
-#
-# IMPORTANT - one non-obvious requirement for the MT174:
-#   The PiggyMeter optical head is half-duplex, so the /?! request echoes back into RX.
-#   Without an RX debug tap the component mis-parses that echo and logs
-#   "Invalid identification frame" on every readout. Adding a *non-consuming* RX tap
-#   changes the UART read timing just enough that the echo is handled and mode C works.
-#   Add this to the `uart:` block in piggymeter-common.yaml:
-#
-#     debug:
-#       direction: RX
-#       dummy_receiver: false
-#       after:
-#         timeout: 500ms
-#       sequence:
-#         - lambda: UARTDebug::log_string(direction, bytes);
+# No special UART handling is needed - verified with this component on ESPHome 2026.7:
+# identification + full readout, zero "Invalid identification frame". The component
+# already filters the half-duplex optical echo.
 #
 # Full config (on-device analytics: tan phi / reactive-penalty alarm, runtime mode/baud
-# tuning, formatted clock, etc.) and detailed notes:
+# tuning, formatted clock, etc.) and notes:
 #   https://github.com/jotuera/piggymeter-iskra-mt174
 
 sensor:
